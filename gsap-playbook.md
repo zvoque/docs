@@ -2,6 +2,8 @@
 
 Deep motion patterns for high-end bespoke websites. Everything GSAP can do, in playbook form: what it is, when to reach for it, the senior idiom, the trap.
 
+> Part of a frontier/craft reference set — the platform features coding agents forget. Default reach for motion: a fade-in and a basic scroll listener. This is the rest of the toolkit. Mind the version/support notes; verify before prod.
+
 > **Reduced-motion is mandatory.** Every scrub/pin/split/parallax/autoplay below needs a `prefers-reduced-motion: reduce` branch that sets the end-state and skips the motion. See §30.
 
 ---

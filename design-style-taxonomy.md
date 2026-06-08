@@ -1,5 +1,7 @@
 # Master Web Design Taxonomy
 
+> Part of a frontier/craft reference set for steering coding agents and designers past the default. Default reach: the generic "modern SaaS" look. Use the **trap** on each entry to avoid the cliché.
+
 A working reference for design direction. Covers: **aesthetic styles/movements** (incl. illustration), **typography styles** (compositional treatments), **color palette styles**, **animation styles**, **components** (navbar, button, card, form, overlay, hero… by axis), **layout & composition**, **imagery & media**, **surface & effects**, **accessibility**, **UX patterns & states**, **page-type anatomy**, **branding & identity**, **data visualization**, **emerging & AI-era interfaces**, **design systems & tokens**, and a **font reference** (Google Fonts grouped by type, last). Each entry explains what it is, where it came from, its defining visual traits, when to reach for it, and the trap to avoid.
 
 Compiled June 2026. Trend-sensitive entries are dated; foundational entries are timeless.
