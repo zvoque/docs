@@ -2,41 +2,37 @@
 
 [![CommitCrimes](https://commitcrimes.dev/badge/zvoque.svg)](https://commitcrimes.dev/u/zvoque)
 
-> Opinionated reference playbooks for design and frontend engineering — terse, trap-aware, and built to be read by both people and coding agents.
+> Reference playbooks that push AI coding agents past their defaults — toward the frontier and craft features they forget exist, with the support-status honesty to keep it shippable.
 
-## Contents
+## The problem these solve
 
-| Document | What it covers |
-| --- | --- |
-| [`design-style-taxonomy.md`](design-style-taxonomy.md) | A field guide to **web / marketing** design direction — styles, type, color, motion, components, layout, and design systems. |
-| [`app-design-taxonomy.md`](app-design-taxonomy.md) | The sibling for **application** design — native iOS/Android, desktop, PWAs, wearables, and spatial, across platform foundations, navigation, components, and behavior. |
-| [`gsap-playbook.md`](gsap-playbook.md) | The complete [GSAP](https://gsap.com) 3.13 motion reference — core, scroll suite, every plugin, framework integration, WebGL, performance, a11y. |
+AI coding agents regress to the mean of their training data. Ask one for a layout and you get flexbox; ask for a card and you get `rounded-2xl shadow-lg` on a gray background. The powerful half of the platform — grid cell-overlap, `:has()`, scroll-driven animations, oklch ramps, variable-font axes, leading-trim — is **rare in the corpus, needs visual iteration to tune, and is craft rather than copy-paste snippet.** Those are exactly the three traits that make a feature get dropped.
 
-## Documents
+These docs are the corrective. Each is written to be read by a person *or* fed to an agent as context, biased toward what gets forgotten — but every frontier feature is tagged with real browser-support status, so it's **frontier with honesty, not novelty for its own sake.** The goal isn't "newest" — it's "the best tool for the job, including the ones the agent wouldn't reach for on its own."
 
-### Web Design Taxonomy
-
-[`design-style-taxonomy.md`](design-style-taxonomy.md) — a master reference for web design direction. Covers aesthetic styles and movements, typography treatments, color palette styles, animation styles, components (navbar, button, card, form, overlay, hero) by axis, layout and composition, imagery and media, surface and effects, accessibility, UX patterns and states, page-type anatomy, branding and identity, data visualization, emerging and AI-era interfaces, design systems and tokens, plus a Google Fonts reference grouped by type.
-
-Each entry explains what it is, where it came from, its defining traits, when to reach for it, and the trap to avoid.
-
-### App Design Taxonomy
-
-[`app-design-taxonomy.md`](app-design-taxonomy.md) — the sibling to the web taxonomy, covering everything that lives behind a login or on a device home screen: native iOS/iPadOS & Android, desktop (macOS/Windows), web apps & PWAs, wearables (watchOS/Wear OS), and spatial (visionOS). Covers platform foundations and design languages, app aesthetic styles, navigation and IA, adaptive layout, components (bars, controls, containers, overlays by axis), forms and keyboards, gestures and input, haptics, motion, the full app state set, onboarding, notifications, permissions and privacy, color and materials, type and icons, accessibility, performance, offline and sync, platform extensions (widgets, Live Activities, App Intents), desktop patterns, monetization and store UX, AI-era app interfaces, and app design systems and tokens.
-
-Each entry explains what it is, which platform owns it, how the platforms diverge, when to reach for it, and the trap to avoid.
-
-### GSAP Playbook
-
-[`gsap-playbook.md`](gsap-playbook.md) — the complete [GSAP](https://gsap.com) 3.13 motion reference, in playbook form. Core (tweens, timelines, eases, utils, stagger, keyframes), the scroll suite (ScrollTrigger, ScrollSmoother, Observer, ScrollTo), every plugin (SplitText, Flip, Draggable, MotionPath, MorphSVG, DrawSVG, Physics2D, and more), framework integration (React `useGSAP`, Next, Vue, Svelte, Angular, Webflow), WebGL/canvas bridges, performance, and accessibility.
-
-For each capability: what it is, when to reach for it, the senior idiom, the trap. Verified against the official GSAP docs.
-
-> As of GSAP 3.13 (2025) the entire toolset — including all formerly paid plugins — is free for commercial use.
+Scope: frontend & design — CSS, motion, design direction, typography, color. Tool-agnostic (Claude Code, Cursor, Copilot, or your own eyes).
 
 ## How to use
 
-These are drop-in references. Read them directly, or hand a file to a coding agent as context when working on design direction or motion. Nothing to install.
+- **As agent context** — import or `@`-mention the relevant file in your `CLAUDE.md` / `.cursorrules` / system prompt, or paste it inline. The agent stops defaulting to the safe attractor.
+- **As a human reference** — read directly. Each entry is: what it is, when to reach for it, the senior idiom, the trap.
+
+## Contents
+
+| Document | The default an agent reaches for → what's here instead |
+| --- | --- |
+| [`css-playbook.md`](css-playbook.md) | Flexbox + `rounded-xl` + one blurry shadow → the frontier/craft half of CSS: container queries, `:has()`, subgrid, anchor positioning, scroll-driven animations, View Transitions, oklch, masks, SVG filters, leading-trim — each tagged ✅🟢🟡🔴 for support. |
+| [`design-style-taxonomy.md`](design-style-taxonomy.md) | Generic "modern SaaS" web look → a field guide to **web/marketing** design direction: styles, type, color, motion, components, layout, design systems, with the trap on each. |
+| [`app-design-taxonomy.md`](app-design-taxonomy.md) | One-size web patterns bolted onto an app → **application** design across native iOS/Android, desktop, PWA, wearable, spatial — platform foundations, navigation, components, behavior. |
+| [`gsap-playbook.md`](gsap-playbook.md) | A fade-in and a basic scroll listener → the complete [GSAP](https://gsap.com) 3.13 toolkit: scroll suite, every plugin, framework integration, WebGL, with native-CSS-vs-JS guidance. |
+
+## What qualifies as a doc here
+
+A reference earns a place only if it:
+
+1. **Counters a real, nameable default** — there's a specific thing agents reach for that this pushes past.
+2. **Is verified** — checked against primary sources (MDN, specs, official docs), not vibes.
+3. **Tags the risk** — frontier features carry honest support/maturity status so nothing ships recklessly.
 
 ## Notes
 
