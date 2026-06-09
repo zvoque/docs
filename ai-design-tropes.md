@@ -2,6 +2,8 @@
 
 A catalog of the design defaults that AI coding agents reach for unprompted. This is the inverse of a style taxonomy: not "styles you can choose," but **the single style you get when you choose nothing.** Ask an agent for a landing page with no direction and the output converges on a narrow attractor — the statistical mean of 2021–2025 startup/SaaS sites, Tailwind defaults, and shadcn/ui out of the box.
 
+There are really two attractors. The first ([§1–§11](#1-the-hero)) is what the agent emits with **no** direction. The second ([§12](#12-keyword-collapse-biases--the-second-attractor)) is what it emits with **weak** direction — a vague quality word like "modern" or "premium," which the agent collapses to a single canned rendering regardless of who is asking.
+
 This doc is descriptive, not prescriptive — deliberately. It names each trope, shows the tell (including the code signature where there is one), and explains **why it emerges** from how the corpus is shaped. It does **not** tell you what to build instead. Prescribing a fix would just install a new default — "always avoid the eyebrow" becomes its own reflex, and the corpus mean shifts rather than disappears. The purpose here is recognition, not redirection: see the trope clearly and the decision of whether to keep, drop, or replace it stays yours.
 
 None of these tropes is *wrong*. Each is fine when chosen for fit. They are notable only as **unexamined defaults** — reached for because they are frequent, not because they were decided. Frequency ≠ fit.
@@ -13,7 +15,7 @@ Compiled June 2026. The specific tells are dated (they describe the current attr
 ## How to use this doc
 
 - **A list of suspects, not a ban list.** Presence of a trope is not a defect. An eyebrow label or a 3-column grid shipped on purpose is a decision; the same thing shipped because it appeared on its own is a default. This doc only helps you tell which is which.
-- **Tropes travel in bundles.** Pull one (the eyebrow kicker) and the rest tend to be present too — pill badge, gradient word, bento grid, FAQ accordion, CTA band. They co-occur in the training data as a single memorized gestalt, not 30 independent choices. See [§12 Meta-patterns](#12-meta-patterns--why-the-tropes-travel-together).
+- **Tropes travel in bundles.** Pull one (the eyebrow kicker) and the rest tend to be present too — pill badge, gradient word, bento grid, FAQ accordion, CTA band. They co-occur in the training data as a single memorized gestalt, not 30 independent choices. See [§13 Meta-patterns](#13-meta-patterns--why-the-tropes-travel-together).
 - **Feed it to the agent, or read it yourself.** As agent context it names the attractor so the model can be pointed at it. As a human reference it is a pre-flight scan: read your own draft back and count the tells.
 
 ---
@@ -32,7 +34,8 @@ Compiled June 2026. The specific tells are dated (they describe the current attr
 - [9. Imagery & iconography](#9-imagery--iconography)
 - [10. Copy & voice](#10-copy--voice)
 - [11. The code fingerprint](#11-the-code-fingerprint)
-- [12. Meta-patterns](#12-meta-patterns--why-the-tropes-travel-together)
+- [12. Keyword-collapse biases](#12-keyword-collapse-biases--the-second-attractor)
+- [13. Meta-patterns](#13-meta-patterns--why-the-tropes-travel-together)
 
 ---
 
@@ -235,11 +238,48 @@ When the visual tells fail you, the source confirms it. These class and pattern 
 
 ---
 
-# 12. Meta-patterns — why the tropes travel together
+# 12. Keyword-collapse biases — the second attractor
 
-The individual tells are surface symptoms of three forces underneath.
+Everything above is what the agent does with **no** direction. This is what it does with **weak** direction: a subjective quality word. The bias here is not any single rendering — it is the **collapse**. A word with infinite valid executions resolves to one frequent reading, the same one every time, across every brand, audience, and context. "Premium" rendered for a funeral home and a sneaker drop comes out identical.
+
+**Style names are not in scope — this is about descriptors.** The distinction is the whole point:
+
+- A **style name** (brutalist, Swiss, vaporwave, Memphis, neo-brutalism, Art Deco) names a *defined visual language*. "Brutalist" → thick borders, raw type, exposed structure is *correct* — that mapping is the definition of the word. The style is supposed to look that way; rendering it that way is not a bias. A style taxonomy is the reference for those.
+- A **subjective descriptor** (modern, premium, clean, bold, elegant) names a desired *impression* with no canonical form. There is no single correct "modern." When the agent renders one anyway, and renders the same one regardless of context, that is the collapse.
+
+The reading the agent picks is often a perfectly good fit — that is not the issue. The tell is that **no alternative reading was considered**; the word was treated as having one answer when it has many.
+
+### The descriptor → reflex readings
+
+- **"modern"** — the most dangerous word: it resolves straight to the [§1–§11](#1-the-hero) attractor itself — glass, gradient, dark, rounded, Inter. To the corpus, "modern" effectively *means* "the current mean."
+- **"clean" / "simple"** — white background, gray text, a grid, generous space, no texture, no risk.
+- **"minimal"** — whitespace + thin Inter + one accent + centered. (Minimalism is a real movement with real discipline; the bias is the *loose* use collapsing to "empty and safe" rather than considered reduction.)
+- **"bold"** — huge type + high contrast + one saturated color. Resolves to *loud*, never to *decisive*.
+- **"premium" / "luxury"** — black + thin Didone serif + gold + vast whitespace + slow fades. The perfume-ad reflex.
+- **"elegant"** — serif + a script accent + muted palette + centered.
+- **"sleek"** — dark + glossy + thin sans + a subtle gradient.
+- **"sophisticated"** — charcoal/black + serif + muted + thin weights.
+- **"professional" / "corporate"** — blue + neutral sans + a safe grid + stock photography.
+- **"trustworthy"** — resolves to blue, essentially every time.
+- **"fresh"** — bright + pastel + rounded + white + airy.
+- **"dynamic" / "energetic"** — diagonals + gradient + motion on everything.
+- **"friendly" / "approachable"** — rounded corners + warm palette + soft sans + illustration.
+- **"futuristic"** — dark + neon cyan/purple + grid + glow + monospace accents.
+
+### Domain words collapse the same way
+
+Industry and category words used as direction trigger the same single-reading reflex — domain in, one palette out, with no question of what *this* particular brand within the domain might be: **"healthcare"** → blue + calm + rounded; **"fintech" / "finance"** → blue or green + sans + grid; **"SaaS"** → the [§1–§11](#1-the-hero) attractor wholesale; **"crypto / web3"** → dark + neon + gradient; **"wellness"** → sage + cream + serif.
+
+**Why it emerges:** the corpus pairs each descriptor with whichever execution co-occurs with it most often, and the model retrieves that modal rendering rather than reasoning about the word. A defined style has a *correct* rendering; a descriptor has only a *frequent* one — and the frequent one is returned as though it were correct.
+
+---
+
+# 13. Meta-patterns — why the tropes travel together
+
+The individual tells are surface symptoms of these forces underneath.
 
 - **Tropes are a bundle, not a list.** They co-occur in the training data as a single "what a landing page is" gestalt, so the agent emits them together: eyebrow drags in pill, gradient word, bento, FAQ, CTA band. Finding one trope is a reliable predictor that the rest are present.
 - **Symmetry is the comfort zone.** The defaults are overwhelmingly centered, balanced, equal-column, evenly-spaced. The corpus rewards "can't look obviously wrong," and symmetry is the safest way to never look wrong, so the attractor is symmetric by construction.
 - **No era, no place, no view.** The default site could belong to any company, anywhere, in any year from roughly 2022 to 2025. It references no design movement, no cultural moment, no specific audience. Its decoration is not derived from content — there is a glow because glows are common in the corpus, not because anything in the content called for light.
 - **"Tasteful" is the ceiling, not the floor.** The attractor maxes out at inoffensive. It is never ugly on purpose, never loud, never austere to the point of risk, never weird — because none of those survive the "can't look wrong" filter that produced it.
+- **Two attractors, one mechanism.** The no-direction attractor ([§1–§11](#1-the-hero)) and the keyword-collapse attractor ([§12](#12-keyword-collapse-biases--the-second-attractor)) are the same behavior with different triggers. No direction collapses to the corpus mean; a vague descriptor collapses to *that word's* corpus mean. Both retrieve the most frequent thing instead of deciding. The fix is not in this doc — naming the reflex is; the deciding stays with whoever reads it.
