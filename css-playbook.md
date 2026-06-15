@@ -19,10 +19,13 @@ Every feature is tagged. **Read the tag before shipping.**
 ## The 2026 reality nobody updated their mental model for
 
 - **Same-document View Transitions are cross-browser Baseline** (Firefox 144, Oct 2025). Ship unguarded. Not Chrome-only anymore.
+- **You can vertically center a block with no flexbox** — `align-content: center` works on plain block/table containers (Baseline 2024). The "flex just to center one thing" reflex is obsolete.
+- **Anchor positioning is Baseline** (Firefox 147, Jan 2026) — all three engines. Floating-UI-for-tooltips is now a CSS one-liner; progressive-enhance only because it's *recent*, not because an engine is missing.
+- **Style queries are cross-browser** (Firefox 151, May 2026) — `@container style(--x: y)` is no longer Chromium-only.
 - **Scroll-driven animations ship in Safari 26 + Chrome.** Firefox is the *only* gap and it degrades clean. Production-viable as progressive enhancement *today*.
 - **`color-contrast()` (list form) never shipped** — cut. The replacement `contrast-color()` (black/white only) is Baseline as of Apr 2026.
 - **Native masonry is Safari-26-only** — not the `grid-template-rows: masonry` everyone assumed shipped.
-- **`if()`, `sibling-index()`, customizable `<select>`, scroll-state queries, CSS carousels** are Chromium-only experimental. Real, but not portable.
+- **`@function`, `if()`, customizable `<select>`, scroll-state queries, CSS carousels, `interactivity: inert`** are Chromium-only experimental. Real, but not portable. (`sibling-index()` joined Safari 26.2 — now two-engine.)
 - **`accent-color`, `:has()`, `@layer` ARE Baseline** — stale model priors call them experimental. They're not.
 
 ---
@@ -41,10 +44,10 @@ Style on an **ancestor's** size or computed style, not the viewport. The decoupl
 - `container-type`: `inline-size` (query inline axis, cheap — the common case) · `size` (both axes, **needs explicit block size or content collapses**) · `normal` (style queries only).
 - **Length units** resolve to the *query container*: `cqi` (inline — use this), `cqb`, `cqw/cqh`, `cqmin/cqmax`. Component-relative fluid type: `font-size: clamp(1.25rem, 1rem + 2cqi, 2.5rem)`.
 
-**Style queries** 🟡 — `@container style(--theme: dark) { ... }`. Only **custom properties** are queryable in shipping browsers (Firefox: none). Boolean form `style(--featured)` is true when the value differs from initial — a clean "flag set?" test. Killer use: **no container-type requirement, no layout cost** — pass `--variant` down and branch styling, replacing prop-to-class plumbing.
+**Style queries** 🟢 — `@container style(--theme: dark) { ... }`. Only **custom properties** are queryable (cross-browser as of Firefox 151, May 2026; *range* queries like `style(--x > 5)` remain 🔴). Boolean form `style(--featured)` is true when the value differs from initial — a clean "flag set?" test. Killer use: **no container-type requirement, no layout cost** — pass `--variant` down and branch styling, replacing prop-to-class plumbing.
 
 - **Traps:** an unnamed `@container` binds to the *nearest* container ancestor — a closer wrapper silently steals it; **always name + query by name**. An element **cannot query itself** (`container-type` is queryable only by descendants) — the #1 reproduced bug. `container-type` establishes a containing block → can break `position: fixed` descendants and collapse intrinsic height.
-- Size queries ✅ (since 2023). Style queries 🟡.
+- Size queries ✅ (since 2023). Style queries 🟢 (Firefox 151, May 2026).
 
 ## 2. Subgrid ✅
 
@@ -72,7 +75,7 @@ Nested grid adopts the parent's tracks → descendants align to the *parent's* l
 ```css
 grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
 ```
-**Dense packing** `grid-auto-flow: dense` backfills holes — but reorders *visually* not in DOM → pair with `reading-flow` (§13) or avoid for focusable content.
+**Dense packing** `grid-auto-flow: dense` backfills holes — but reorders *visually* not in DOM → pair with `reading-flow` (§12) or avoid for focusable content.
 
 **Masonry** 🔴 — resolved direction is CSS Grid Lanes (`grid-template-rows: masonry`); **Safari 26 shipped first (2026)**, Chrome/FF behind flags. Gate `@supports (grid-template-rows: masonry)`; not Baseline — don't claim otherwise.
 
@@ -125,7 +128,7 @@ body:has(dialog[open])      { overflow: hidden; }                /* scroll-lock,
 - **`:where()` contributes ZERO specificity** — the correct, under-used tool for design-system *defaults* and resets meant to be overridden. Prefix typography/reset rules with it so authors never fight specificity.
 - Both forgiving — one unknown selector doesn't invalidate the list (ideal for cross-engine lists).
 
-## 8. Anchor positioning 🟡
+## 8. Anchor positioning 🟢
 
 Tether one element to another's edge/size declaratively — tooltips, menus, popovers that follow their trigger with automatic overflow fallback, **no JS positioning library**.
 ```css
@@ -140,7 +143,7 @@ Tether one element to another's edge/size declaratively — tooltips, menus, pop
 ```
 - `position-area: bottom center` is the simple 3×3-grid shorthand for common placements. `position-visibility: anchors-visible` hides the tether when the anchor scrolls off — no observer.
 - **`anchor-scope`** confines an `anchor-name` to a subtree — essential in lists/repeated components, else the positioned element binds to the *first* match (real trap).
-- ~81% global; all three engines but Safari 26 / Firefox 147 are recent → **progressive-enhance with a static fallback**, gate `@supports (anchor-name: --x)`.
+- **Baseline as of Firefox 147 (Jan 2026)** — all three engines. But FF 147 / Safari 26 are *recent* (~81% global) → still **progressive-enhance with a static fallback**, gate `@supports (anchor-name: --x)`.
 
 ## 9. Logical properties ✅
 
@@ -152,7 +155,7 @@ inline-size: 40ch; block-size: auto;   /* width/height → logical */
 ```
 Free correctness upgrade even in LTR-only: components become drop-in RTL, vertical writing modes Just Work. AI defaults to physical props out of habit.
 
-## 10. Intrinsic sizing & `aspect-ratio` ✅
+## 10. Intrinsic sizing, `aspect-ratio` & block alignment ✅
 
 ```css
 width: min-content;        /* shrink to longest unbreakable content */
@@ -162,6 +165,12 @@ inline-size: stretch;      /* fill containing block MINUS margins (fixes width:1
 .media { aspect-ratio: 16 / 9; }   /* reserve space, kill CLS; pair object-fit: cover */
 ```
 `aspect-ratio` only fills the gap — overridden if both width and height are set. `stretch` is newer; `-webkit-fill-available` is the broad fallback.
+
+**`align-content` on block containers** (Baseline 2024, all engines) — distribute block-axis free space *without* flex/grid. Vertically center children in a plain block:
+```css
+.box { display: block; align-content: center; }   /* no flexbox, no grid */
+```
+The "switch to flex just to center one thing" reflex is dead. **Trap:** can't be `@supports`-detected (it's been valid in flex/grid for years → the query always passes); just ship a sane fallback.
 
 ## 11. `field-sizing: content` 🟡 — auto-growing inputs
 
@@ -180,16 +189,18 @@ Decouple **focus/AT order** from visual order — the a11y fix for `order`, `den
 ```
 Chromium 137+ only. Enhancement only — never rely on it for baseline a11y; keep DOM order sane.
 
-## 13. `sibling-index()` / `sibling-count()` 🔴
+**`interactivity: inert` 🔴** (Chrome 135+) — the CSS form of the HTML `inert` attribute: make a subtree unfocusable + drop it from the a11y tree from a stylesheet. Killer use: inert the off-screen slides of a carousel. Chromium-only — pair with the HTML `inert` attribute (✅ Baseline) for portability.
+
+## 13. `sibling-index()` / `sibling-count()` 🟡
 
 Per-element math from DOM position — staggers, ramps, radial menus — **without inline `--i` or JS**.
 ```css
 li { transition-delay: calc(sibling-index() * 60ms);
      background: hsl(calc(sibling-index() / sibling-count() * 360deg) 70% 50%); }
 ```
-Replaces the `style="--i:3"` pattern AI emits constantly. Chromium ~2026, FF in dev, Safari unshipped — experimental, needs a non-staggered fallback.
+Replaces the `style="--i:3"` pattern AI emits constantly. Chrome 138 + Safari 26.2 (Dec 2025); **Firefox is the only gap** — keep a non-staggered fallback, gate with `@supports`.
 
-## 14. `if()` function 🔴
+## 14. `if()` & `@function` — CSS conditionals & custom functions 🔴
 
 Inline conditional *values* — branch one property on a style/media/feature query.
 ```css
@@ -197,6 +208,15 @@ color: if(style(--scheme: dark): white; else: black);
 background: if(supports(color: oklch(0% 0 0)): oklch(60% .2 250); else: #4477dd);
 ```
 **Chrome 137+ only.** No space between `if` and `(`. `style()` reads custom props only. Returns invalid if nothing matches → **always put a plain fallback declaration above it.** Bleeding-edge.
+
+**`@function`** — author-defined functions with typed params and a `result`: reusable computed values with their own local logic (custom properties that *compute*). The missing half of "CSS as a language."
+```css
+@function --fluid(--min <length>, --max <length>) {
+  result: clamp(var(--min), 4cqi, var(--max));
+}
+.card { padding: --fluid(1rem, 2rem); }
+```
+**Chrome 139+ only** (Aug 2025; no Safari/Firefox). Params are typed (`<length>`, `<number>`…); can read custom props and call `if()` inside. Keep a static fallback declaration above any `@function` call.
 
 ## 15. `@supports` — the gate for everything above ✅
 
@@ -234,6 +254,8 @@ P3 = ~25% more colors; saturated reds/greens/cyans that can't exist in `#rrggbb`
 @media (color-gamut: p3) { .accent { background: color(display-p3 0.96 0 0.4); } }
 ```
 High-chroma `oklch()` also renders into P3 automatically where available — often the simpler route. Out-of-gamut components clamp, don't error.
+
+**`dynamic-range-limit` 🔴** (Chrome 136+) — cap how bright HDR images/video render next to SDR UI so they don't blow out: `standard` | `constrained` | `no-limit`, plus a `dynamic-range-limit-mix()` for in-between. Chromium-only; degrades to full HDR. The first real CSS knob for HDR media.
 
 ## 18. Relative color syntax 🟢
 
@@ -293,7 +315,7 @@ background:
   radial-gradient(50% 50% at 80% 30%, oklch(.7 .2 280 / .5), transparent 70%),
   #0b0b10;
 ```
-- Animate gradients via `@property` (§30) — you can't transition a raw gradient, but you can transition a registered angle/percentage/color it references.
+- Animate gradients via `@property` (§29) — you can't transition a raw gradient, but you can transition a registered angle/percentage/color it references.
 - **Trap:** a gradient is an *image* (only on `background-image`/`mask-image`/etc.) and invisible to AT — never encode meaning in one.
 
 ## 23. Blend modes ✅
@@ -301,7 +323,7 @@ background:
 `mix-blend-mode` blends with **what's behind**; `background-blend-mode` blends an element's **own background layers**. Different jobs.
 - **Duotone:** grayscale image + `background-blend-mode: multiply` over a color + a `screen` layer for highlights.
 - **Knockout text:** white text + `mix-blend-mode: multiply`/`difference` over a photo → punches through to reveal the backdrop.
-- **Grain over color:** SVG-noise (§27) with `mix-blend-mode: overlay`/`soft-light` at low opacity.
+- **Grain over color:** SVG-noise (§26) with `mix-blend-mode: overlay`/`soft-light` at low opacity.
 - **`isolation: isolate`** is the discipline knob — wrap a blending group so members blend *with each other only*, not the whole page. Forgetting it is the "why is it blending with the body?" bug. Any non-`normal` blend creates a stacking context.
 
 ## 24. `backdrop-filter` 🟢 — frosted glass
@@ -359,7 +381,7 @@ box-shadow: 0 1px 1px rgb(0 0 0 / .04), 0 2px 2px rgb(0 0 0 / .04), 0 4px 4px rg
 .cutout { filter: drop-shadow(0 4px 6px rgb(0 0 0 / .4)); }  /* hugs the shape, not the box */
 ```
 
-## 28. `clip-path` + `shape()` ✅/🟢
+## 28. `clip-path`, `shape()` & `corner-shape` ✅/🟢/🔴
 
 ```css
 .reveal   { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); transition: clip-path .6s; }
@@ -367,6 +389,11 @@ box-shadow: 0 1px 1px rgb(0 0 0 / .04), 0 2px 2px rgb(0 0 0 / .04), 0 4px 4px rg
 ```
 - **Polygons interpolate only with matching vertex counts** — pad the simpler shape with duplicate points.
 - **`shape()` 🟢** (Baseline Feb 2026) — CSS-native alternative to `path()`: uses CSS units, `%`, `calc()` (path() is fixed px / SVG syntax, doesn't scale). Commands `move/line/hline/vline/curve…with/smooth/arc/close` with `by` (relative)/`to` (absolute). Gate non-trivial uses `@supports (clip-path: shape(from 0 0, close))` with a `polygon()` fallback.
+- **`corner-shape` 🔴** (Chrome 139+) — shape the corner that `border-radius` rounds: `round` (default), `bevel`, `scoop`, `notch`, or `superellipse(n)` for true **squircles** (`superellipse(2)` ≈ iOS-style; `0` = bevel, →∞ = square, negative = scoop). Chromium-only but **risk-free** — unsupported engines render the plain `border-radius`.
+```css
+.card { border-radius: 24px; corner-shape: superellipse(2); }   /* squircle */
+.tag  { border-radius: 12px; corner-shape: bevel; }
+```
 
 ---
 
@@ -423,6 +450,7 @@ Browser snapshots old+new, cross-fades by default. Pseudo tree: `::view-transiti
 ::view-transition-group(.card) { animation-duration: 300ms; }
 ```
 - **Types** branch by intent: `startViewTransition({ update, types:['forward'] })` + `:root:active-view-transition-type(forward) ::view-transition-old(root) { ... }`.
+- **`view-transition-name: match-element`** (cross-engine 2025) — auto-assigns a stable unique name per element so list items morph without hand-writing `--item-1`, `--item-2`…: `li { view-transition-name: match-element; }`.
 - **Cross-document / MPA 🟡** (Firefox gap) — pure CSS, opt in on **both** pages: `@view-transition { navigation: auto; }`. Hook `pagereveal`/`pageswap` to set names / restore scroll. FF falls back to instant nav.
 - **Traps:** name the *smallest* element that morphs (each named el gets `contain` + its own snapshot → big/scrolling ones clip or oversize). `old` is a frozen image. Duplicate names abort the transition. Keep the callback a pure state swap. Guard interaction + restore focus; wrap in `prefers-reduced-motion`.
 
@@ -513,6 +541,7 @@ body { font-family: "Inter", "Inter Fallback", sans-serif; }
 ```
 - **The under-used real fix (Baseline since 2023):** match a fallback font's box to the web font with the four overrides so `swap` doesn't shift layout. (`next/font`, `fontaine` generate the numbers.) The overrides are percentages of the *fallback's* em — eyeballing reintroduces CLS.
 - `font-display`: `optional` (best CWV — no shift, no late swap) · `swap` (body, *with* the metric overrides above so FOUT is invisible) · `fallback` · `block` (avoid for content).
+- **`font-size-adjust` 🟢** (two-value, Baseline 2024) — pin apparent size to a font's x-height (or cap-height) so a fallback swap doesn't jump even when metrics differ: `font-size-adjust: ex-height 0.5` (or `cap-height 0.7`). Complements the metric-override block above; simpler when you only need size parity.
 - **`unicode-range`** — the most under-used loading win: split into Latin / Latin-ext / Cyrillic faces; browser fetches only ranges actually rendered (self-hosters ship 4× the bytes without it).
 - Preload only the critical face: `<link rel=preload as=font crossorigin>` (`crossorigin` mandatory even same-origin, else double download).
 
@@ -524,7 +553,7 @@ h1 { font-size: clamp(1.5rem, 1rem + 3vw, 3rem); }   /* the rem term is LOAD-BEA
 - **Raw `vw`/`cqi` fails WCAG 1.4.4** — pure-viewport text doesn't respond to zoom / text-size at a fixed viewport (200% zoom changes nothing). The `rem` component restores zoom response; it should contribute the majority at common viewports. AI consistently omits it.
 - **Container-relative** (`cqi`) is the modern move for component-portable scales: `clamp(1rem, 0.8rem + 2cqi, 1.75rem)` — same rem-floor caveat. Generate steps from min/max at two viewport anchors (Utopia) rather than hand-tuning `vw`.
 
-## 41. `text-box-trim` / leading-trim 🟡 — the 2025 type feature (still gated)
+## 41. `text-box-trim` / leading-trim 🟡 — the 2025 type feature (Firefox-only gap)
 
 Trim the half-leading every font ships so a heading's box hugs the letterforms — labels/headings center *optically*, spacing comes from cap-height/baseline not the phantom line-box.
 ```css
@@ -532,7 +561,7 @@ Trim the half-leading every font ships so a heading's box hugs the letterforms �
   h1 { text-box: trim-both cap alphabetic; }   /* longhand: text-box-trim + text-box-edge */
 }
 ```
-`cap alphabetic` = trim to cap-height top, baseline bottom. **Chrome 133+/Safari 18.2+, no Firefox** → gate, and keep the normal-half-leading fallback looking right. Changes the box → re-tune margins; don't sprinkle on a finished layout.
+`cap alphabetic` = trim to cap-height top, baseline bottom. **Shipped unflagged in Chrome 133 + Safari 18.2; Firefox is the only holdout** → gate with `@supports`, keep the normal-half-leading fallback looking right. Changes the box → re-tune margins; don't sprinkle on a finished layout.
 
 ## 42. `text-wrap` ✅ — balance vs pretty
 
@@ -541,7 +570,7 @@ h1, h2, .card-title { text-wrap: balance; }   /* even line lengths — HEADINGS 
 p, li               { text-wrap: pretty; }     /* kills orphan last-line — BODY */
 [contenteditable]   { text-wrap: stable; }     /* typed lines don't reflow */
 ```
-**`balance` = headings, `pretty` = body. Never balance paragraphs** — hard cap (~6 lines Chromium, ~10 FF) and it silently falls back to `auto` beyond. `pretty` is cheap (reconsiders only the last lines). AI frequently inverts this.
+**`balance` = headings, `pretty` = body. Never balance paragraphs** — hard cap (~6 lines Chromium, ~10 FF) and it silently falls back to `auto` beyond. `pretty` is cheap (reconsiders only the last lines). AI frequently inverts this. **`pretty` has no Firefox yet (🟡)** — degrades clean. Engines diverge: Chrome only fixes orphans/hyphenation on the last lines; **Safari 26 evaluates the whole paragraph** (better rag, fewer rivers). Longhands behind the shorthand: `text-wrap-style: pretty | balance | stable` × `text-wrap-mode: wrap | nowrap`.
 
 ## 43. Line clamping 🟡
 
@@ -587,13 +616,15 @@ a { text-decoration-thickness: 0.08em; text-underline-offset: 0.18em; text-decor
 ```
 `text-underline-offset` + `text-decoration-thickness` are the biggest "designed underline" upgrade — the default crowds descenders. `from-font` respects the designer's metrics.
 
-## 48. Vertical text & writing-mode ✅
+## 48. Vertical text, writing-mode & CJK spacing ✅/🟢
 
 ```css
 .spine { writing-mode: vertical-rl; text-orientation: mixed; }     /* CJK-correct */
 .latin-spine { writing-mode: vertical-rl; text-orientation: upright; }
 ```
 `mixed` (CJK upright, Latin rotated — correct default for Japanese), `upright` (Latin spine labels), `sideways` (all 90°). **Trap:** logical props (`-block`/`-inline`) flip meaning in vertical modes — use them throughout or layouts break.
+- **`text-autospace` 🟢** (Baseline Nov 2025) — auto inter-script spacing between CJK and Latin/numerals: `text-autospace: normal` (or `no-autospace` to opt out). **`text-spacing-trim` 🔴** (Chromium) trims the built-in space on CJK full-width punctuation at line edges.
+- **`ruby-position` / `ruby-align` 🟢** (Baseline Dec 2024) — place phonetic guides `over`/`under`/inter-character and justify them: `ruby { ruby-position: under; ruby-align: center; }`.
 
 ## 49. Highlight & line pseudos ✅/🟢
 
@@ -603,6 +634,7 @@ p::first-line { font-variant-caps: small-caps; }   /* dynamic, re-evaluates on r
 ::target-text { background: color-mix(in oklch, var(--brand) 25%, transparent); }   /* scroll-to-text-fragment arrival (Baseline 2024) */
 ```
 - `::first-line`/`::first-letter` accept only a restricted property set (font/color/bg/decoration/spacing).
+- **`::spelling-error` / `::grammar-error` 🔴** (Chrome 121+) — restyle the native squiggle: `::spelling-error { text-decoration: wavy underline var(--err); }`. Paint-only props; Chromium-only but safe (ignored elsewhere).
 - **Custom Highlight API `::highlight()` 🟢** (Baseline 2025) — style arbitrary text ranges with **zero DOM mutation** (search hits, spellcheck, collab cursors). Register `Range`s via JS `CSS.highlights.set("name", new Highlight(range))`. Traps: ranges are static snapshots (rebuild on DOM change); only paint props work (color/background/decoration/shadow — no font-size/weight); special highlight-inheritance chain. Replaces the "wrap matches in `<mark>`" reflow hack.
 
 ---
@@ -625,7 +657,7 @@ p::first-line { font-variant-caps: small-caps; }   /* dynamic, re-evaluates on r
         translate: calc(cos(var(--a)) * var(--r)) calc(sin(var(--a)) * var(--r)); }
 ```
 - `atan2(dy, dx)` → angle; `hypot(3,4)` → distance/magnitude. `round(up, var(--h), var(--line))` snaps to a baseline grid. `pow`/`log` for modular type scales in-CSS.
-- **Trap:** bare numbers in trig are **radians** — `sin(45)` ≠ `sin(45deg)`. Trig returns `<number>`; multiply by a length to use as one. (Pair with `sibling-index()` §13 🔴 for index-free; until cross-browser, set `--i` inline or via `:nth-child`.)
+- **Trap:** bare numbers in trig are **radians** — `sin(45)` ≠ `sin(45deg)`. Trig returns `<number>`; multiply by a length to use as one. (Pair with `sibling-index()` §13 🟡 for index-free; until Firefox ships, keep a `--i`/`:nth-child` fallback.)
 
 ## 52. Generated content & counters ✅
 
@@ -638,7 +670,7 @@ a[href^="http"]::after { content: " ↗ (" attr(href) ")"; }
 ```
 - **`content: <visual> / <alt>`** — the under-used a11y move: decorative glyphs get a real accessible name (`/ ""` to hide from AT).
 - `@counter-style` systems: `cyclic numeric alphabetic symbolic fixed additive extends`. `::marker` styles color/font/content only (no box — switch to `::before` for a background).
-- **Trap:** *typed* `attr()` (`attr(data-w px)`) for non-`content` props is 🔴 Chromium-only; string `attr()` in `content` is the only universally safe form.
+- **Trap:** *typed* `attr()` — the new `attr(data-w type(<length>), 0px)` form (Chrome 133+, 🔴) feeds *any* property a real typed value with a fallback, not just strings; still Chromium-only, so string `attr()` in `content` remains the only universally safe form.
 
 ## 53. Form controls — the 2024–26 wave
 
@@ -646,9 +678,11 @@ a[href^="http"]::after { content: " ↗ (" attr(href) ")"; }
 - **`accent-color` ✅** — `:root { accent-color: ... }` tints checkbox/radio/range/progress. (Baseline since ~2022 — stale priors say otherwise.)
 - **`<dialog>` + `::backdrop` ✅** — `showModal()` → top layer, focus trap, ESC close. Animate in with `@starting-style` + `allow-discrete`.
 - **Popover API 🟢** (2025) — `<button popovertarget="m">` + `<div id="m" popover>`. `auto` (light-dismiss, one-at-a-time) / `manual` (stackable). `popovertarget` is an implicit anchor reference — no `anchor-name` needed.
-- **`<details name>` exclusive accordion 🟢** + **`::details-content` 🟡** — one-open-per-group; animate open/close with `interpolate-size: allow-keywords` + `allow-discrete` (animation is the PE layer; the accordion works everywhere).
+- **`<details name>` exclusive accordion 🟢** + **`::details-content` 🟢** (Baseline Sep 2025) — one-open-per-group; animate open/close with `interpolate-size: allow-keywords` + `allow-discrete` (the height-auto animation is the Chromium-only PE layer; the accordion + pseudo work everywhere).
 - **Customizable `<select>` 🔴** (Chrome 135+) — `appearance: base-select` on both `select` and `::picker(select)`; style the button, popup, options (rich HTML), `::checkmark`, `::picker-icon`, `selectedcontent`. Degrades to native — design the base look as the enhancement.
 - **`::file-selector-button` ✅**, **`field-sizing` 🟡** (§11).
+- **`:open` pseudo-class 🟢** (Baseline May 2026) — style the open state of `<details>`/`<dialog>`/popovers and `<select>`/pickers: `select:open { ... }`, `dialog:open { ... }`.
+- **`caret-shape` 🔴** (Chrome 144+) — `bar` (default) / `block` / `underscore` text-insertion caret; nice for code/terminal inputs. Single-engine, brand-new.
 
 ## 54. Scroll UX
 
@@ -710,4 +744,4 @@ For scroll-driven animations: set the final state, `animation: none`. For View T
 
 ## The biggest fully-safe wins to reach for first
 
-`grid-area: 1/1` cell-overlap · `:where()` zero-specificity defaults · `@layer` over specificity escalation · subgrid for card-row alignment · `@property` (unlocks animation) · `content-visibility: auto` (perf) · `:user-valid` (validation UX) · `scrollbar-gutter: stable` (no shift) · `content: x / "alt"` (a11y) · `:nth-child(of S)` zebra · `tabular-nums` on every numeric column · oklch even ramps + relative-color derivation · layered smooth shadows · `mask` scroll-edge fades · metric-override fallback fonts (zero CLS). These are Baseline, under-used, and exactly what gets forgotten.
+`grid-area: 1/1` cell-overlap · `:where()` zero-specificity defaults · `@layer` over specificity escalation · subgrid for card-row alignment · `@property` (unlocks animation) · `content-visibility: auto` (perf) · `:user-valid` (validation UX) · `scrollbar-gutter: stable` (no shift) · `content: x / "alt"` (a11y) · `:nth-child(of S)` zebra · `tabular-nums` on every numeric column · oklch even ramps + relative-color derivation · layered smooth shadows · `mask` scroll-edge fades · `align-content: center` block-centering (no flex) · metric-override fallback fonts (zero CLS). These are Baseline, under-used, and exactly what gets forgotten.
