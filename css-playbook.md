@@ -347,7 +347,7 @@ Any image/gradient/SVG as an alpha/luminance stencil.
 
 ## 26. SVG filters via `filter: url(#id)` ✅ — grain, goo, distortion
 
-The frontier most AI skips. Reference an inline `<filter>`.
+The frontier most AI skips. Reference an inline `<filter>`. (For true GPU fragment shaders — when SVG filters aren't enough — see `shaders-playbook.md`.)
 
 **Procedural grain (`feTurbulence`)** — no asset, infinitely scalable:
 ```html

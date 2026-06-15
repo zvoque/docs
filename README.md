@@ -10,7 +10,7 @@ AI coding agents regress to the mean of their training data. Ask one for a layou
 
 These docs are the corrective. Each is written to be read by a person *or* fed to an agent as context, biased toward what gets forgotten — but every frontier feature is tagged with real browser-support status, so it's **frontier with honesty, not novelty for its own sake.** The goal isn't "newest" — it's "the best tool for the job, including the ones the agent wouldn't reach for on its own."
 
-Scope: frontend & design — CSS, motion, design direction, typography, color — plus end-to-end AI-assisted video creation: pre-production, generation, code-rendered & motion graphics, editing, and audio. Tool-agnostic (Claude Code, Cursor, Copilot, Higgsfield, Hyperframes, or your own eyes).
+Scope: frontend & design — CSS, shaders/WebGL, motion, design direction, typography, color — plus end-to-end AI-assisted video creation: pre-production, generation, code-rendered & motion graphics, editing, and audio. Tool-agnostic (Claude Code, Cursor, Copilot, Higgsfield, Hyperframes, or your own eyes).
 
 ## How to use
 
@@ -33,6 +33,7 @@ Scope: frontend & design — CSS, motion, design direction, typography, color �
 | [`video-audio-taxonomy.md`](video-audio-taxonomy.md) | Drop one trending track under everything at a flat level → the **sound half**: voiceover (TTS + direction), music (gen/selection, BPM-to-pace), sound-design layers, the mix (ducking, LUFS), sync, and licensing — each with the trap. |
 | [`gsap-playbook.md`](gsap-playbook.md) | A fade-in and a basic scroll listener → the complete [GSAP](https://gsap.com) 3.13 toolkit: scroll suite, every plugin, framework integration, WebGL, with native-CSS-vs-JS guidance. |
 | [`mobile-web-playbook.md`](mobile-web-playbook.md) | "Shrink the desktop + one `@media (max-width: 768px)`" → the real mobile-web craft: dynamic viewport units (`dvh`/`svh`), safe-area insets, touch hit-targets, the keyboard/visual-viewport problem, `overscroll-behavior`, the INP performance budget, responsive images, PWA feel, and mobile a11y — each tagged ✅🟢🟡🔴 for support, with the trap on each. |
+| [`shaders-playbook.md`](shaders-playbook.md) | Paste a Shadertoy snippet and hope it compiles → the **web-shader craft layer**: the SDF / noise / raymarching toolkit, post-processing & GPGPU, the GLSL ES 3.00 ↔ WGSL cross-reference, and WebGL2-vs-WebGPU-vs-Three/TSL integration — each tagged ✅🟢🟡🔴 for support, plus a "should this even be a shader?" gut-check and the compile-breaking bugs AI ships. |
 
 ## What qualifies as a doc here
 
